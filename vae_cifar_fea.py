@@ -8,7 +8,7 @@ from utils import load_data, save_params, load_params, init_variables
 from visualisation import plot_images
 from vae_new import construct_optimizer
 
-n_iter = 100
+n_iter = 20
 batch_size = 50
 lr = 1e-4#5e-5
 K = 1

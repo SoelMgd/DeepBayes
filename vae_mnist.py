@@ -10,7 +10,7 @@ from vae_new import construct_optimizer
 
 dimZ = 64
 dimH = 500
-n_iter = 100
+n_iter = 20 #100
 batch_size = 50
 lr = 1e-4
 K = 1
@@ -57,14 +57,28 @@ def main(data_name, vae_type, dimZ, dimH, n_iter, batch_size, K, checkpoint):
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
     sess = tf.Session(config=config)
-    if not os.path.isdir('save/'):
+
+    '''if not os.path.isdir('save/'):
         os.mkdir('save/')
         print('create path save/')
     path_name = data_name + '_conv_vae_%s/' % (vae_type + '_' + str(dimZ))
     if not os.path.isdir('save/'+path_name):
         os.mkdir('save/'+path_name)
         print('create path save/' + path_name)
-    filename = 'save/' + path_name + 'checkpoint'
+    filename = 'save/' + path_name + 'checkpoint' '''
+
+    # Chemin de base pour les sauvegardes
+    save_dir = '/app/save/'
+
+    if not os.path.isdir(save_dir):
+        os.mkdir(save_dir)
+    path_name = data_name + '_conv_vae_%s/' % (vae_type + '_' + str(dimZ))
+    if not os.path.isdir(save_dir + path_name):
+        os.mkdir(save_dir + path_name)
+    filename = save_dir + path_name + 'checkpoint'
+
+
+
     if checkpoint < 0:
         print('training from scratch')
         init_variables(sess)
@@ -74,10 +88,15 @@ def main(data_name, vae_type, dimZ, dimH, n_iter, batch_size, K, checkpoint):
   
     # now start fitting 
     n_iter_ = min(n_iter,20)
+    print("on va commencer le train ", n_iter, n_iter_)
+    print("nombre iterations ", int(n_iter/n_iter_))
+
     beta = 1.0
     for i in range(int(n_iter/n_iter_)):
+        print("fit", i)
         fit(sess, X_train, Y_train, n_iter_, lr, beta)
         # print training and test accuracy
+        print("eval", i)
         eval_acc(sess, X_test, Y_test, 'test')
 
     # save param values

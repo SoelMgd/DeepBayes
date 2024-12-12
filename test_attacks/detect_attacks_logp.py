@@ -10,7 +10,9 @@ import tensorflow as tf
 import os, sys, pickle, argparse
 sys.path.append('../utils/')
 from model_eval import model_eval
-from scipy.misc import logsumexp
+#from scipy.misc import logsumexp
+from scipy.special import logsumexp
+
 import keras.backend
 sys.path.append('load/')
 from load_classifier import load_classifier
