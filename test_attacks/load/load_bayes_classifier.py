@@ -94,15 +94,27 @@ def bayes_classifier(x, enc, dec, ll, dimY, dimZ, lowerbound, K = 1, beta=1.0, u
     if use_mean: K=1
     enc_conv, enc_mlp = enc
     fea = enc_conv(x)
-    N = x.get_shape().as_list()[0]
+    N = x.get_shape().as_list()[0] 
+    #N = tf.shape(x)[0]  # Récupère la taille dynamique du batch
+
     logpxy = []
     if no_z:
         z_holder = tf.zeros([N, dimZ])
         K = 1
     else:
         z_holder = None
+    
+    print(f"N: {N}, dimY: {dimY}")
+    assert N is not None, "N (batch size) is None. Check how it is being computed."
+    assert dimY is not None, "dimY (number of classes) is None. Ensure it is set correctly."
+
     for i in range(dimY):
         y = np.zeros([N, dimY]); y[:, i] = 1; y = tf.constant(np.asarray(y, dtype='f'))
+
+        #y = tf.one_hot(indices=i, depth=dimY, on_value=1.0, off_value=0.0)
+        #y = tf.tile(tf.expand_dims(y, axis=0), [N, 1])  # Répète le vecteur pour chaque exemple du batch
+
+
         bound = lowerbound(x, fea, y, enc_mlp, dec, ll, K, IS=False, beta=beta, 
                            use_mean=use_mean, fix_samples=fix_samples, seed=seed, z=z_holder)
         logpxy.append(tf.expand_dims(bound, 1))
